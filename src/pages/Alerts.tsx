@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Alert } from '@/types';
 
+
 export default function Alerts() {
   const { user, hasRole, canAccessMine } = useAuth();
   const [filterSeverity, setFilterSeverity] = useState('all');
