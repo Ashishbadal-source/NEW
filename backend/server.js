@@ -24,6 +24,29 @@ console.log("✅ MongoDB Connected1")
 const app = express();
 const PORT = 5000;
 
+app.post('/api/auth/login', async (req, res) => {
+  const { name, email, password, role, secretCode } = req.body;
+
+  // Site: anyone allowed
+  if (role === 'site') {
+    // proceed normally
+  } else {
+    // Restricted roles
+    const validCodes = {
+      operator: "OP123",
+      inspector: "IN456",
+      admin: "AD789",
+    };
+
+    if (secretCode !== validCodes[role]) {
+      return res.status(403).json({ message: "Invalid code for role" });
+    }
+  }
+
+  // continue signup...
+});
+
+
 // Middleware
 app.use(cors());
 app.use(express.json()); // parse JSON body

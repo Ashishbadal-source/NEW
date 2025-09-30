@@ -16,6 +16,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState('site'); 
+  const [secretCode, setSecretCode] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +36,9 @@ export default function Signup() {
       const res = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+       // body: JSON.stringify({ name, email, password }),
+       body: JSON.stringify({ name, email, password, role, secretCode }),
+
       });
 
       if (!res.ok) throw new Error("Signup failed");
@@ -47,8 +51,10 @@ export default function Signup() {
         title: "Account Created",
         description: `Welcome ${data.user.name} to RockfallAI Dashboard`,
       });
-
-      navigate("/dashboard");
+       if (role === "admin") navigate("/dashboard");
+    else if (role === "operator") navigate("/dashboard");
+    else if (role === "inspector") navigate("/dashboard");
+    else navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Signup Failed",
@@ -159,6 +165,28 @@ export default function Signup() {
                   />
                 </div>
               </div>
+               <select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  className="border p-2 w-full rounded bg-black text-white"
+>
+  <option value="site">Site Manager</option>
+  <option value="operator">Operator</option>
+  <option value="inspector">Inspector</option>
+  <option value="admin">Admin</option>
+</select> 
+{role !== "site" && (
+  <div>
+    <Label>Secret Code</Label>
+    <Input
+      required
+      value={secretCode}
+      onChange={(e) => setSecretCode(e.target.value)}
+      placeholder="Enter secret code"
+      className="bg-input border-border"
+    />
+  </div>
+)}
 
               <Button
                 type="submit"
