@@ -16,7 +16,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState('site'); 
+ const [role, setRole] = useState('site'); 
   const [secretCode, setSecretCode] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +36,7 @@ export default function Signup() {
       const res = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-       // body: JSON.stringify({ name, email, password }),
+       //body: JSON.stringify({ name, email, password }),
        body: JSON.stringify({ name, email, password, role, secretCode }),
 
       });
@@ -55,6 +55,7 @@ export default function Signup() {
     else if (role === "operator") navigate("/dashboard");
     else if (role === "inspector") navigate("/dashboard");
     else navigate("/dashboard");
+    
     } catch (error) {
       toast({
         title: "Signup Failed",

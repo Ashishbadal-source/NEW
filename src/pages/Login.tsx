@@ -348,6 +348,10 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+//const [email, setEmail] = useState('');
+//const [password, setPassword] = useState('');
+const [role, setRole] = useState('site'); // 👈 new role state
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -370,7 +374,10 @@ export default function Login() {
         description: `Welcome ${data.user.name} to RockfallAI Dashboard`,
       });
 
-      navigate('/dashboard');
+       if (role === "admin") navigate("/dashboard");
+    else if (role === "operator") navigate("/dashboard");
+    else if (role === "inspector") navigate("/dashboard");
+    else navigate("/dashboard"); // def
     } catch (error) {
       toast({
         title: "Login Failed",
@@ -381,6 +388,8 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+
 
   const demoCredentials = [
     { email: 'operator@demo.com', role: 'Mining Operator', color: 'text-primary' },
@@ -457,6 +466,38 @@ export default function Login() {
                   />
                 </div>
               </div>
+               {/* <select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  className="border p-2 w-full rounded bg-black text-white"
+>
+  <option value="site">Site Manager</option>
+  <option value="operator">Operator</option>
+  <option value="inspector">Inspector</option>
+  <option value="admin">Admin</option>
+</select> */}
+              <select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  className="border p-2 w-full rounded bg-black text-white"
+>
+  <option value="site">Site Manager</option>
+  <option value="operator">Operator (Requires code)</option>
+  <option value="inspector">Inspector (Requires code)</option>
+  <option value="admin">Admin (Requires code)</option>
+</select>
+
+{role !== "site" && (
+  <Input
+    type="text"
+    placeholder="Enter secret code"
+    value={secretCode}
+    onChange={(e) => setSecretCode(e.target.value)}
+    className="mt-2 bg-input border-border"
+    required
+  />
+)}
+
 
               <Button
                 type="submit"
