@@ -1,29 +1,21 @@
-// const express = require("express");
-// const cors = require("cors");
-
-// const app = express();
-// const PORT = 5000;
-
-// app.use(cors());
-// app.use(express.json()); // to parse JSON body
-
-// // Auth routes
-// app.use("/api/auth", require("./routes/auth"));
-
-// app.listen(PORT, () => {
-//   console.log(`✅ Backend running on http://localhost:${PORT}`);
-// });
-
-
-
-
 const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose"); // ✅ for MongoDB
-console.log("✅ MongoDB Connected1")
-const app = express();
-const PORT = 5000;
+const dotenv = require("dotenv");
+const connectDB = require("./config/db.js");
+const cors = require("cors"); // <-- add this
 
+dotenv.config();
+connectDB();
+
+const app = express();
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
+
+<<<<<<< HEAD
 // app.post('/api/auth/login', async (req, res) => {
 //   const { name, email, password, role, secretCode } = req.body;
 
@@ -59,12 +51,22 @@ mongoose
   })
   .then(() => console.log("✅ MongoDB Connected3"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+=======
+console.log("COrs origing" , process.env.CORS_ORIGIN) ; 
+>>>>>>> origin/Moksh
 
-// Routes
-app.use("/api/auth", require("./routes/auth"));       // Auth routes
-app.use("/api/incidents", require("./routes/Incident")); // Incident routes
+app.use(express.json());
 
-// Start server
+// routes
+const userRoutes = require("./routes/users.js");
+app.use("/api/users", userRoutes);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+<<<<<<< HEAD
   console.log(`✅ Backend running on http://localhost:${PORT}`);
 });
+=======
+  console.log(`Server running on port ${PORT}`);
+});
+>>>>>>> origin/Moksh
