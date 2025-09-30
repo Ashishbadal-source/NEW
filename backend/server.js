@@ -7,7 +7,16 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());        // <-- add this
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
+
+console.log("COrs origing" , process.env.CORS_ORIGIN) ; 
+
 app.use(express.json());
 
 // routes
