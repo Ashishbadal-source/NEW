@@ -1,23 +1,21 @@
-const asynchandler  = require("../utils/asyncHandler.js");
-const  ApiError  = require("../utils/ApiErrors.js");
+const asynchandler = require("../utils/asyncHandler.js");
+const ApiError = require("../utils/ApiErrors.js");
 const User = require("../models/user.model.js");
-const {ApiResponse} = require("../utils/ApiResponse.js");
-const jwt = require("jsonwebtoken")
+const { ApiResponse } = require("../utils/ApiResponse.js");
+const jwt = require("jsonwebtoken");
 
-const signupUser= asynchandler(async (req, res) => {
+const signupUser = asynchandler(async (req, res) => {
   // signup ka logic here
   // get user details from frontend
   // validation - which are required ( like non empty , valid email , password length )
-  // check if user already exists or not : username , email
+  // check if user already exists or not : name , email
   // create a new user  object
   // create entry in database
   // remove password and refreshToken from response
   // check for user creation
-  const { username, email, password  } = req.body;
+  const { name, email, password } = req.body;
 
-  if (
-    [username, email, password ].some((field) => field?.trim() === "")
-  ) {
+  if ([name, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -30,41 +28,42 @@ const signupUser= asynchandler(async (req, res) => {
     throw new ApiError(400, "Password must be at least 8 characters long");
   }
 
-  const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+  const existingUser = await User.findOne({ $or: [{ name }, { email }] });
   if (existingUser) {
-    throw new ApiError(409, "User with this username or email already exists");
+    throw new ApiError(409, "User with this name or email already exists");
   }
 
   const user = await User.create({
-    username: username.toLowerCase(),
+    name,
     email,
-    password
+    password,
   });
 
-  const createdUser = await User.findById(user._id).select("-password -refreshToken");
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
   return res.status(201).json(
     new ApiResponse({
-      statusCode: 201,
-      message: "User registered successfully",
+      message: "User created successfully",
       data: createdUser,
     })
-  );
+  )
 });
 
 const loginUser = asynchandler(async (req, res) => {
   // get user details from req.body
   // validation - non empty and others
-  // check if user exists or not : username , email
+  // check if user exists or not : name , email
   // check for password
   // generate access and refresh tokens
   // send cookie
-  const { username, email, password } = req.body;
-  if (!username && !email) {
-    throw new ApiError(400, "email or username is required");
+  const {  email, password } = req.body;
+  if (!email) {
+    throw new ApiError(400, "email is required");
   }
 
-  const user = await User.findOne({ $or: [{ username }, { email }] }).select(
+  const user = await User.findOne({ $or: [ { email }] }).select(
     "+password"
   );
 
@@ -82,7 +81,6 @@ const loginUser = asynchandler(async (req, res) => {
 
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });
-
 
   return res
     .status(200)
@@ -211,11 +209,9 @@ const refreshAccessToken = asynchandler(async (req, res) => {
     );
 });
 
-
-module.exports =  {
+module.exports = {
   signupUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
-} ;
-
+};

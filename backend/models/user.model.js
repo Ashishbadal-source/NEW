@@ -4,12 +4,11 @@ const jwt = require("jsonwebtoken")  ;
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
       required: true,
       unique: true,
       trim: true,
-      lowercase: true,
       index: true,
     },
     email: {
@@ -17,7 +16,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      lowercase: true,
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Please fill a valid email address",
@@ -62,7 +60,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      name: this.name,
       role: this.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -78,7 +76,7 @@ userSchema.methods.generateRefreshToken = function () {
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "1d",
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d",
     }
   );
 };

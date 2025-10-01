@@ -18,7 +18,7 @@
 // //   const handleSubmit = async (e: React.FormEvent) => {
 // //     e.preventDefault();
 // //     setIsLoading(true);
-    
+
 // //     try {
 // //       await login(email, password);
 // //       toast({
@@ -68,7 +68,7 @@
 // //                 <Shield className="w-8 h-8 text-white" />
 // //               </div>
 // //             </div>
-            
+
 // //             <h1 className="text-2xl font-bold text-center text-foreground mb-2">
 // //               Welcome Back
 // //             </h1>
@@ -155,9 +155,6 @@
 // //   );
 // // }
 
-
-
-
 // import React, { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { Card } from '@/components/ui/card';
@@ -180,7 +177,7 @@
 //     setIsLoading(true);
 
 //     try {
-//       const res = await fetch("http://localhost:5000/api/auth/login", {
+//       const res = await fetch("http://localhost:5001/api/auth/login", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({ username: email, password }),
@@ -241,7 +238,7 @@
 //                 <Shield className="w-8 h-8 text-white" />
 //               </div>
 //             </div>
-            
+
 //             <h1 className="text-2xl font-bold text-center text-foreground mb-2">
 //               Welcome Back
 //             </h1>
@@ -328,25 +325,21 @@
 //   );
 // }
 
-
-
-
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/components/ui/use-toast';
-import { Shield, ArrowLeft, User, Lock } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/components/ui/use-toast";
+import { Shield, ArrowLeft, User, Lock } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -354,23 +347,23 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5001/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({  email, password }),
       });
 
       if (!res.ok) throw new Error("Invalid credentials");
-      const data = await res.json();
+      const Responsedata = await res.json();
 
       await login(email, password);
 
       toast({
         title: "Login Successful",
-        description: `Welcome ${data.user.name} to RockfallAI Dashboard`,
+        description: `Welcome ${Responsedata.data.user.name} to RockfallAI Dashboard`,
       });
 
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Login Failed",
@@ -383,15 +376,23 @@ export default function Login() {
   };
 
   const demoCredentials = [
-    { email: 'operator@demo.com', role: 'Mining Operator', color: 'text-primary' },
-    { email: 'inspector@demo.com', role: 'Inspection Team', color: 'text-info' },
-    { email: 'admin@demo.com', role: 'Main Admin', color: 'text-risk-high' },
-    { email: 'site@demo.com', role: 'Site Admin', color: 'text-warning' },
+    {
+      email: "operator@demo.com",
+      role: "Mining Operator",
+      color: "text-primary",
+    },
+    {
+      email: "inspector@demo.com",
+      role: "Inspection Team",
+      color: "text-info",
+    },
+    { email: "admin@demo.com", role: "Main Admin", color: "text-risk-high" },
+    { email: "site@demo.com", role: "Site Admin", color: "text-warning" },
   ];
 
   const fillCredentials = (email: string) => {
     setEmail(email);
-    setPassword('demo123');
+    setPassword("demo123");
   };
 
   return (
@@ -399,7 +400,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <Button
           variant="ghost"
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="mb-8 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -413,7 +414,7 @@ export default function Login() {
                 <Shield className="w-8 h-8 text-white" />
               </div>
             </div>
-            
+
             <h1 className="text-2xl font-bold text-center text-foreground mb-2">
               Welcome Back
             </h1>
@@ -463,7 +464,7 @@ export default function Login() {
                 disabled={isLoading}
                 className="w-full bg-gradient-primary hover:opacity-90 text-white"
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 
@@ -474,7 +475,7 @@ export default function Login() {
               </p>
               <Button
                 variant="outline"
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate("/signup")}
                 className="w-full bg-white border border-green-500 text-green-600 hover:bg-green-50"
               >
                 Sign Up
@@ -513,4 +514,3 @@ export default function Login() {
     </div>
   );
 }
-

@@ -31,7 +31,7 @@
 //     setIsLoading(true);
 
 //     try {
-//       const res = await fetch("http://localhost:5000/api/users/signup", {
+//       const res = await fetch("http://localhost:5001/api/users/signup", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({ name, email, password }),
@@ -189,8 +189,6 @@
 //   );
 // }
 
-
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -233,23 +231,20 @@ export default function Signup() {
       });
 
       console.log("Response status:", res.status);
-      const data = await res.json();
-      console.log("Response data:", data);
+      const Responsedata = await res.json();
+      console.log("Response data:", Responsedata);
 
       if (!res.ok) {
         // ✅ Backend error
-        throw new Error(data.error || "Signup failed");
+        throw new Error(Responsedata.error || "Signup failed");
       }
-
-      // ✅ Auto-login user after signup
-      await login(email, password);
 
       toast({
         title: "Account Created",
-        description: `Welcome ${data.user.name} to RockfallAI Dashboard`,
+        description: `${Responsedata.data.user.name}, your account has been created successfully.`,
       });
 
-      navigate("/dashboard");
+      navigate("/login");
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({

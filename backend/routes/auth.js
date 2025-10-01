@@ -4,39 +4,33 @@
 
 // // In-memory users (for demo)
 // let users = [
-//   { id: uuidv4(), username: "admin", password: "1234", name: "Admin User", role: "admin" }
+//   { id: uuidv4(), name: "admin", password: "1234", name: "Admin User", role: "admin" }
 // ];
 
 // // POST /api/auth/login
 // router.post("/login", (req, res) => {
-//   const { username, password } = req.body;
-//   const user = users.find(u => u.username === username && u.password === password);
+//   const { name, password } = req.body;
+//   const user = users.find(u => u.name === name && u.password === password);
 //   if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
 
 //   // NOTE: in prod return JWT or session token
-//   res.json({ success: true, user: { id: user.id, username: user.username, name: user.name, role: user.role } });
+//   res.json({ success: true, user: { id: user.id, name: user.name, name: user.name, role: user.role } });
 // });
 
 // // POST /api/auth/register
 // router.post("/register", (req, res) => {
-//   const { username, password, name } = req.body;
-//   if (users.find(u => u.username === username)) {
-//     return res.status(400).json({ success: false, message: "Username exists" });
+//   const { name, password, name } = req.body;
+//   if (users.find(u => u.name === name)) {
+//     return res.status(400).json({ success: false, message: "name exists" });
 //   }
-//   const newUser = { id: uuidv4(), username, password, name: name || username, role: "user" };
+//   const newUser = { id: uuidv4(), name, password, name: name || name, role: "user" };
 //   users.push(newUser);
-//   res.json({ success: true, user: { id: newUser.id, username: newUser.username, name: newUser.name } });
+//   res.json({ success: true, user: { id: newUser.id, name: newUser.name, name: newUser.name } });
 // });
 
 // module.exports = router;
 
-
-
-
-
 // ----working---------------
-
-
 
 const express = require("express");
 const router = express.Router();
@@ -51,14 +45,14 @@ const users = [
 
 // POST /api/auth/login
 router.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { name, password } = req.body;
 
-  const user = users.find(
-    (u) => u.email === username && u.password === password
-  );
+  const user = users.find((u) => u.email === name && u.password === password);
 
   if (!user) {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid credentials" });
   }
 
   return res.json({
@@ -70,9 +64,3 @@ router.post("/login", (req, res) => {
   });
 });
 module.exports = router;
-
-
-
-
-
-

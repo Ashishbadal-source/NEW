@@ -79,9 +79,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      // Call the backend logout endpoint to invalidate the session
+      await fetch("http://localhost:5001/api/users/logout", {
+        method: "POST",
+        // This is crucial for sending the httpOnly cookies to the server
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Failed to logout from server:", error);
+    } finally {
+      // Always clear the user state on the client, even if the API call fails
+      setUser(null);
+      localStorage.removeItem("user");
+    }
   };
 
   const hasRole = (role: UserRole | UserRole[]) => {
