@@ -200,7 +200,6 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 import { Shield, ArrowLeft, User, Lock } from "lucide-react";
-
 export default function Signup() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -209,7 +208,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const [role, setRole] = useState("site"); 
+  const [secretCode, setSecretCode] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -222,14 +222,22 @@ export default function Signup() {
       });
       return;
     }
-
+      if (password !== confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/signup", {
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        //body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role, secretCode }),
       });
 
       console.log("Response status:", res.status);
@@ -248,8 +256,10 @@ export default function Signup() {
         title: "Account Created",
         description: `Welcome ${data.user.name} to RockfallAI Dashboard`,
       });
-
-      navigate("/dashboard");
+     if (role === "admin") navigate("/dashboard");
+    else if (role === "operator") navigate("/dashboard");
+    else if (role === "inspector") navigate("/dashboard");
+    else navigate("/dashboard");
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({
@@ -361,7 +371,28 @@ export default function Signup() {
                   />
                 </div>
               </div>
-
+<select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  className="border p-2 w-full rounded bg-black text-white"
+>
+  <option value="site">Site Manager</option>
+  <option value="operator">Operator</option>
+  <option value="inspector">Inspector</option>
+  <option value="admin">Admin</option>
+</select> 
+{role !== "site" && (
+  <div>
+    <Label>Secret Code</Label>
+    <Input
+      required
+      value={secretCode}
+      onChange={(e) => setSecretCode(e.target.value)}
+      placeholder="Enter secret code"
+      className="bg-input border-border"
+    />
+  </div>
+)}
               <Button
                 type="submit"
                 disabled={isLoading}

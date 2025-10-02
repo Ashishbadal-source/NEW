@@ -26,16 +26,33 @@ const mongoose = require("mongoose");
 //   { timestamps: true }
 // );
 
+// const userSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   email: { type: String, required: true, unique: true },
+//   password: { type: String, required: true },
+//   role: {
+//     type: String,
+//     enum: ["user", "manager", "supervisor"], // <-- allowed values
+//     default: "user"
+//   },
+//   assignedMineId: { type: String, default: null }
+// });
+
+
+//const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["user", "manager", "supervisor"], // <-- allowed values
-    default: "user"
+    enum: ["site", "operator", "inspector", "admin","user"], // match with frontend
+    default: "site"
   },
   assignedMineId: { type: String, default: null }
 });
 
-module.exports = mongoose.model("User", userSchema);
+//module.exports = mongoose.model("User", userSchema);
+
+module.exports = mongoose.model("User", userSchema) ;

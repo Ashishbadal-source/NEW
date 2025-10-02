@@ -345,14 +345,14 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const User = require("../models/User.js");
+const User = require("../models/user.js");
 
 // ================================
 // POST /api/users/signup
 // ================================
 router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password ,role} = req.body;
 
     // 1️⃣ Validation
     if (!name || !email || !password) {
@@ -373,7 +373,7 @@ router.post("/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "user",        // default role
+      role:role,        // default role
       assignedMineId: null // optional
     });
 
@@ -389,5 +389,43 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: err.message || "Server error" });
   }
 });
+ 
 
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password ,role} = req.body;
+
+    // 1️⃣ Validation
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    // 2️⃣ Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    // 3️⃣ Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // 4️⃣ Respond with user data (without password)
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: err.message || "Server error" });
+  }
+});
 module.exports = router;
