@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { alertsData } from '@/data/alertsData';
 import { 
   AlertTriangle, Bell, CheckCircle, XCircle, 
   Clock, ChevronRight, Filter, Download,
@@ -33,7 +34,8 @@ export default function Alerts() {
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [resolveDialog, setResolveDialog] = useState(false);
   const [resolutionNote, setResolutionNote] = useState('');
-
+  const [alert, setAlerts] = useState<Alert[]>(alertsData);
+ // const [alerts, setAlerts] = useState<Alert[]>(alertsData);
   const alerts: Alert[] = [
     {
       id: 'alert-001',

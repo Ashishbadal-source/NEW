@@ -8,12 +8,35 @@ import {
 } from 'lucide-react';
 import { UserRole } from '@/types';
 import { cn } from '@/lib/utils';
-
+import { useNotifications } from "@/contexts/NotificationContext";  
+import { alertsData } from '@/data/alertsData';
 export default function DashboardLayout() {
   const { user, logout, hasRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const { alerts } = useNotifications();
+  const [showAlerts, setShowAlerts] = React.useState(false);
+//   const recentAlerts = [
+//   { id: 1, severity: "High", message: "Critical displacement detected in North Wall sector", time: "2 mins ago", zone: "Zone A-3" },
+//   { id: 2, severity: "Medium", message: "Increased strain readings on East Terrace", time: "15 mins ago", zone: "Zone B-2" },
+//   { id: 3, severity: "Low", message: "Routine maintenance required for sensor cluster", time: "1 hour ago", zone: "Zone C-1" },
+// ];
+// inside DashboardLayout component (above return)
+const timeAgo = (date?: string | Date) => {
+  if (!date) return "";
+  const d = new Date(date);
+  const diffMs = Date.now() - d.getTime();
+  const seconds = Math.floor(diffMs / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return d.toLocaleDateString();
+};
 
   const handleLogout = () => {
     logout();
@@ -130,12 +153,68 @@ export default function DashboardLayout() {
 
             <div className="flex items-center space-x-4">
               {/* Notification button */}
-              <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+              {/* <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-risk-high rounded-full"></span>
-              </button>
-
               {/* Chat button */}
+<div className="flex items-center space-x-4 relative">
+  {/* Bell icon */}
+  <button
+    onClick={() => setShowAlerts(!showAlerts)}
+    className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+  >
+    <Bell className="w-6 h-6 cursor-pointer" />
+    {alerts.length > 0 && (
+      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+        {alerts.length}
+      </span>
+    )}
+  </button>
+
+  {/* Alerts dropdown */}
+      {showAlerts && (
+  <div className="absolute right-0 top-full mt-2 w-80 bg-gray-900 text-white shadow-xl rounded-2xl p-3 z-50 border border-gray-700">
+    {alerts.length === 0 ? (
+      <p className="text-sm text-gray-400 text-center py-4">No recent alerts</p>
+    ) : (
+      <div className="max-h-64 overflow-y-auto space-y-2">
+        {alerts.map((alert) => {
+          const timeStr = timeAgo(alert.createdAt);
+          const sevClass =
+            alert.severity === "Critical"
+              ? "bg-red-700 text-white"
+              : alert.severity === "High"
+              ? "bg-red-600 text-white"
+              : alert.severity === "Medium"
+              ? "bg-yellow-400 text-black"
+              : "bg-green-600 text-white";
+
+          return (
+            <div
+              key={alert.id}
+              className="flex items-start gap-3 p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors"
+            >
+              {/* Severity Badge */}
+              <span className={`text-xs font-semibold px-2 py-1 rounded-full ${sevClass}`}>
+                {alert.severity}
+              </span>
+
+              {/* Message + Time */}
+              <div className="flex-1">
+                <p className="text-sm leading-tight">{alert.message}</p>
+                {timeStr && <p className="text-xs text-gray-400 mt-1">{timeStr}</p>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
+)}
+
+</div>
+
+
               <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
                 <MessageSquare className="w-5 h-5" />
               </button> 

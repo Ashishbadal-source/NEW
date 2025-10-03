@@ -17,6 +17,9 @@ import Incidents from "./pages/Incidents";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { NotificationProvider } from "@/contexts/NotificationContext";
+
+
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
+        <NotificationProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -44,6 +48,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </NotificationProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
