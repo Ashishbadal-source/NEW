@@ -59,6 +59,19 @@ export default function DashboardLayout() {
     navigate("/login");
   };
 
+  <Button
+  onClick={async () => {
+    await logout(); // call updated logout
+    navigate('/login');
+  }}
+  variant="ghost"
+  className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+>
+  <LogOut className="w-4 h-4 mr-2" />
+  Logout
+</Button>
+
+
   const navigation = [
     {
       name: "Overview",

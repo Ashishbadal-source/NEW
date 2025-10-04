@@ -63,4 +63,15 @@ router.post("/login", (req, res) => {
     },
   });
 });
+
+// Example in Express
+router.post('/logout', (req, res) => {
+  // If using sessions:
+  req.session.destroy(err => {
+    if (err) return res.status(500).json({ message: 'Logout failed' });
+    res.clearCookie('connect.sid'); // or your session cookie
+    return res.status(200).json({ message: 'Logged out' });
+  });
+});
+
 module.exports = router;

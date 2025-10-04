@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '@/types';
+const BASE_URL = "http://localhost:5001"; // your backend URL
 
 interface AuthContextType {
   user: User | null;
@@ -79,22 +80,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
-  const logout = async () => {
-    try {
-      // Call the backend logout endpoint to invalidate the session
-      await fetch("http://localhost:5001/api/users/logout", {
-        method: "POST",
-        // This is crucial for sending the httpOnly cookies to the server
-        credentials: "include",
-      });
-    } catch (error) {
-      console.error("Failed to logout from server:", error);
-    } finally {
-      // Always clear the user state on the client, even if the API call fails
-      setUser(null);
-      localStorage.removeItem("user");
-    }
-  };
+  // const logout = async () => {
+  //   try {
+  //     // Call the backend logout endpoint to invalidate the session
+  //     await fetch("http://localhost:5001/api/users/logout", {
+  //       method: "POST",
+  //       // This is crucial for sending the httpOnly cookies to the server
+  //       credentials: "include",
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to logout from server:", error);
+  //   } finally {
+  //     // Always clear the user state on the client, even if the API call fails
+  //     setUser(null);
+  //     localStorage.removeItem("user");
+  //   }
+  // };
 
   const hasRole = (role: UserRole | UserRole[]) => {
     if (!user) return false;
@@ -109,6 +110,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user.role === 'inspector') return true;
     return false;
   };
+const logout = async () => {
+  try {
+    await fetch(`${BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include", // cookies sent automatically
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    setUser(null);
+    localStorage.removeItem("user");
+  }
+};
+
 
   return (
     <AuthContext.Provider
