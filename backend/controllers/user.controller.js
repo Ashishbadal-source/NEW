@@ -1,5 +1,4 @@
 const asynchandler = require("../utils/asyncHandler.js");
-const ApiError = require("../utils/ApiErrors.js");
 const User = require("../models/user.model.js");
 const { ApiResponse } = require("../utils/ApiResponse.js");
 const jwt = require("jsonwebtoken");
@@ -13,30 +12,46 @@ const signupUser = asynchandler(async (req, res) => {
   // create entry in database
   // remove password and refreshToken from response
   // check for user creation
-  const { name, email, password } = req.body;
+  const { name, email, password, role , secretCode} = req.body;
+
+  if (role === "site") {
+    // proceed normally
+  } else {
+    // Restricted roles
+    const validCodes = {
+      operator: "OP123",
+      inspector: "IN456",
+      admin: "AD789",
+    };
+    if (secretCode !== validCodes[role]) {
+      return res.status(401).json({ error: "Invalid secret code" });
+    }
+
+  }
 
   if ([name, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
   if (!emailRegex.test(email)) {
-    throw new ApiError(400, "Please fill a valid email address");
+    return res.status(400).json({ error: "Please fill a valid email address" });
   }
 
   if (password.length < 8) {
-    throw new ApiError(400, "Password must be at least 8 characters long");
+    return res.status(400).json({ error: "Password must be at least 8 characters long" });
   }
 
   const existingUser = await User.findOne({ $or: [{ name }, { email }] });
   if (existingUser) {
-    throw new ApiError(409, "User with this name or email already exists");
+    return res.status(409).json({ error: "User with this name or email already exists" });
   }
 
   const user = await User.create({
     name,
     email,
     password,
+    role
   });
 
   const createdUser = await User.findById(user._id).select(
@@ -58,9 +73,9 @@ const loginUser = asynchandler(async (req, res) => {
   // check for password
   // generate access and refresh tokens
   // send cookie
-  const {  email, password } = req.body;
-  if (!email) {
-    throw new ApiError(400, "email is required");
+  const {  email, password , role } = req.body;
+  if (!email  || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
   }
 
   const user = await User.findOne({ $or: [ { email }] }).select(
@@ -68,12 +83,16 @@ const loginUser = asynchandler(async (req, res) => {
   );
 
   if (!user) {
-    throw new ApiError(400, "User not found");
+    return res.status(400).json({ error: "User not found" });
   }
 
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid password");
+    return res.status(400).json({ error: "Invalid password" });
+  }
+
+  if( user.role !== role) {
+    return res.status(400).json({ error: "You are not authorized to login as this role" });
   }
 
   const accessToken = user.generateAccessToken();
@@ -121,7 +140,7 @@ const logoutUser = asynchandler(async (req, res) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    throw new ApiError(404, "User not found");
+    return res.status(400).json({ error: "User not found" });
   }
 
   user.refreshToken = null;
@@ -158,7 +177,7 @@ const refreshAccessToken = asynchandler(async (req, res) => {
   const IncomingrefreshToken =
     req.cookies.refreshToken || req.headers.authorization?.split(" ")[1]; // Bearer token
   if (!IncomingrefreshToken) {
-    throw new ApiError(401, "Unauthorized : No token provided");
+    return res.status(401).json({ error: "Unauthorized : No token provided" });
   }
 
   try {
@@ -167,16 +186,16 @@ const refreshAccessToken = asynchandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
   } catch (error) {
-    throw new ApiError(401, "Unauthorized : Invalid token");
+    return res.status(401).json({ error: "Unauthorized : Invalid token" });
   }
 
   const user = await User.findById(decoded._id).select("+refreshToken");
   if (!user) {
-    throw new ApiError(404, "User not found");
+    return res.status(404).json({ error: "User not found" });
   }
 
   if (user.refreshToken !== IncomingrefreshToken) {
-    throw new ApiError(401, "Unauthorized : Invalid token");
+    return res.status(401).json({ error: "Unauthorized : Invalid token" });
   }
 
   const newAccessToken = user.generateAccessToken();

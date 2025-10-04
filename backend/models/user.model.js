@@ -33,9 +33,14 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["Visitor", "Operator", "InspectionTeam", "Siteadmin", "Mainadmin"],
+      enum: ["site", "operator", "inspector", "admin"],
       default: "Visitor",
       required: true,
+    },
+    assignedMineId: {
+      type: String,
+      required: false,
+      default : null 
     },
   },
   {

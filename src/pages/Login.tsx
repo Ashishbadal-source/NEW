@@ -341,6 +341,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState("site");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -350,11 +351,12 @@ export default function Login() {
       const res = await fetch("http://localhost:5001/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({  email, password }),
+        body: JSON.stringify({ email, password, role }),
       });
 
-      if (!res.ok) throw new Error("Invalid credentials");
+      
       const Responsedata = await res.json();
+      if (!res.ok) throw new Error(Responsedata.error || "Invalid credentials");
 
       await login(email, password);
 
@@ -367,7 +369,7 @@ export default function Login() {
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid credentials. Please try again.",
+        description: `${error.message} `,
         variant: "destructive",
       });
     } finally {
@@ -458,6 +460,16 @@ export default function Login() {
                   />
                 </div>
               </div>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="border p-2 w-full rounded bg-black text-white"
+              >
+                <option value="site">Site Manager</option>
+                <option value="operator">Operator</option>
+                <option value="inspector">Inspector</option>
+                <option value="admin">Admin</option>
+              </select>
 
               <Button
                 type="submit"

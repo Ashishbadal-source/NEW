@@ -207,6 +207,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState("site");
+  const [secretCode, setSecretCode] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,7 +229,7 @@ export default function Signup() {
       const res = await fetch("http://localhost:5001/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role , secretCode }),
       });
 
       console.log("Response status:", res.status);
@@ -241,7 +243,7 @@ export default function Signup() {
 
       toast({
         title: "Account Created",
-        description: `${Responsedata.data.user.name}, your account has been created successfully.`,
+        description: `${Responsedata.data.name}, your account has been created successfully.`,
       });
 
       navigate("/login");
@@ -356,7 +358,28 @@ export default function Signup() {
                   />
                 </div>
               </div>
-
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="border p-2 w-full rounded bg-black text-white"
+              >
+                <option value="site">Site Manager</option>
+                <option value="operator">Operator</option>
+                <option value="inspector">Inspector</option>
+                <option value="admin">Admin</option>
+              </select>
+              {role !== "site" && (
+                <div>
+                  <Label>Secret Code</Label>
+                  <Input
+                    required
+                    value={secretCode}
+                    onChange={(e) => setSecretCode(e.target.value)}
+                    placeholder="Enter secret code"
+                    className="bg-input border-border"
+                  />
+                </div>
+              )}
               <Button
                 type="submit"
                 disabled={isLoading}

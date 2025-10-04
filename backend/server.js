@@ -21,10 +21,11 @@ app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
+PORT = process.env.PORT || 5003
 connectDB()
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT || 5001}`);
+      console.log(`🚀 Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {
@@ -34,3 +35,6 @@ connectDB()
 
 const userRouter = require("./routes/user.routes");
 app.use("/api/users", userRouter);
+
+const demoRequestRouter = require("./routes/demoRequest.routes.js");
+app.use("/api/demoRequest", demoRequestRouter);
