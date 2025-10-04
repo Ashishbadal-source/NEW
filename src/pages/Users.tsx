@@ -4,8 +4,8 @@
 // import { Badge } from '@/components/ui/badge';
 // import { Input } from '@/components/ui/input';
 // import { useAuth } from '@/contexts/AuthContext';
-// import { 
-//   Users as UsersIcon, UserPlus, Search, Edit, 
+// import {
+//   Users as UsersIcon, UserPlus, Search, Edit,
 //   Trash2, Shield, Activity, Mail, MapPin
 // } from 'lucide-react';
 // import {
@@ -31,7 +31,7 @@
 //   const [filterRole, setFilterRole] = useState('all');
 //   const [showAddDialog, setShowAddDialog] = useState(false);
 //   const [editingUser, setEditingUser] = useState<User | null>(null);
-  
+
 //   const [newUser, setNewUser] = useState({
 //     name: '',
 //     email: '',
@@ -102,7 +102,7 @@
 //       inspector: 'bg-orange-500',
 //       visitor: 'bg-gray-500',
 //     };
-    
+
 //     const roleLabels = {
 //       main_admin: 'Main Admin',
 //       site_admin: 'Site Admin',
@@ -110,7 +110,7 @@
 //       inspector: 'Inspector',
 //       visitor: 'Visitor',
 //     };
-    
+
 //     return (
 //       <Badge className={`${roleColors[role]} text-white`}>
 //         {roleLabels[role]}
@@ -289,20 +289,20 @@
 //                       </div>
 //                     </div>
 //                   </div>
-                  
+
 //                   <div className="flex items-center space-x-2">
 //                     {getRoleBadge(user.role)}
 //                     {hasRole('main_admin') && user.id !== currentUser?.id && (
 //                       <>
-//                         <Button 
-//                           size="sm" 
+//                         <Button
+//                           size="sm"
 //                           variant="outline"
 //                           onClick={() => setEditingUser(user)}
 //                         >
 //                           <Edit className="w-3 h-3" />
 //                         </Button>
-//                         <Button 
-//                           size="sm" 
+//                         <Button
+//                           size="sm"
 //                           variant="outline"
 //                           onClick={() => handleDeleteUser(user.id)}
 //                         >
@@ -349,9 +349,9 @@
 //             </div>
 //             <div>
 //               <label className="text-sm font-medium">Role</label>
-//               <Select 
-//                 value={newUser.role} 
-//                 onValueChange={(value: User['role']) => 
+//               <Select
+//                 value={newUser.role}
+//                 onValueChange={(value: User['role']) =>
 //                   setNewUser({...newUser, role: value})
 //                 }
 //               >
@@ -420,9 +420,9 @@
 //               </div>
 //               <div>
 //                 <label className="text-sm font-medium">Role</label>
-//                 <Select 
-//                   value={editingUser.role} 
-//                   onValueChange={(value: User['role']) => 
+//                 <Select
+//                   value={editingUser.role}
+//                   onValueChange={(value: User['role']) =>
 //                     setEditingUser({...editingUser, role: value})
 //                   }
 //                 >
@@ -453,10 +453,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -495,7 +491,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users");
+        const res = await fetch("http://localhost:5001/api/users");
         const data = await res.json();
         setUsers(data);
       } catch (error) {
@@ -510,7 +506,7 @@ const Users = () => {
   // Add user
   const handleAddUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch("http://localhost:5001/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser),
@@ -529,7 +525,7 @@ const Users = () => {
     if (!editingUser) return;
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${editingUser._id}`,
+        `http://localhost:5001/api/users/${editingUser._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -547,7 +543,9 @@ const Users = () => {
   // Delete user
   const handleDeleteUser = async (id: string) => {
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+      await fetch(`http://localhost:5001/api/users/${id}`, {
+        method: "DELETE",
+      });
       setUsers(users.filter((u) => u._id !== id));
     } catch (err) {
       console.error(err);
@@ -565,7 +563,10 @@ const Users = () => {
 
       <ul className="space-y-2">
         {users.map((user) => (
-          <li key={user._id} className="border rounded p-2 flex justify-between">
+          <li
+            key={user._id}
+            className="border rounded p-2 flex justify-between"
+          >
             <div>
               <strong>{user.name}</strong> ({user.email}) -{" "}
               <span className="italic">{user.role}</span>
@@ -605,7 +606,9 @@ const Users = () => {
             <Label>Email</Label>
             <Input
               value={newUser.email}
-              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              onChange={(e) =>
+                setNewUser({ ...newUser, email: e.target.value })
+              }
             />
           </div>
           <DialogFooter>

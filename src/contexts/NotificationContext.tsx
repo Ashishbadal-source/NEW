@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Alert } from '@/types';
-import { alertsData } from '@/data/alertsData';  // 👈 import your sample data
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { Alert } from "@/types";
+import { alertsData } from "@/data/alertsData"; // 👈 import your sample data
 
 interface NotificationContextType {
   alerts: Alert[];
@@ -8,7 +14,9 @@ interface NotificationContextType {
   updateAlert: (alert: Alert) => void;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -19,11 +27,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addAlert = (alert: Alert) => {
-    setAlerts(prev => [alert, ...prev].slice(0, 10)); // keep only latest 10
+    setAlerts((prev) => [alert, ...prev].slice(0, 10)); // keep only latest 10
   };
 
   const updateAlert = (updated: Alert) => {
-    setAlerts(prev => prev.map(a => a.id === updated.id ? updated : a));
+    setAlerts((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
   };
 
   return (
@@ -35,6 +43,9 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
-  if (!context) throw new Error("useNotifications must be used within NotificationProvider");
+  if (!context)
+    throw new Error(
+      "useNotifications must be used within NotificationProvider"
+    );
   return context;
 };
